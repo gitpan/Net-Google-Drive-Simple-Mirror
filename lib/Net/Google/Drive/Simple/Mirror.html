@@ -1,0 +1,128 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:ti@mina.(none)" />
+</head>
+
+<body style="background-color: white">
+
+
+
+<ul id="index">
+  <li><a href="#NAME">NAME</a></li>
+  <li><a href="#SYNOPSIS">SYNOPSIS</a></li>
+  <li><a href="#DESCRIPTION">DESCRIPTION</a>
+    <ul>
+      <li><a href="#GETTING-STARTED">GETTING STARTED</a></li>
+    </ul>
+  </li>
+  <li><a href="#METHODS">METHODS</a></li>
+  <li><a href="#CAVEATS">CAVEATS</a></li>
+</ul>
+
+<h1 id="NAME">NAME</h1>
+
+<p>Net::Google::Drive::Simple::Mirror - Locally mirror a Google Drive folder structure</p>
+
+<h1 id="SYNOPSIS">SYNOPSIS</h1>
+
+<pre><code>    use Net::Google::Drive::Simple::Mirror;
+
+    # requires a ~/.google-drive.yml file containing an access token,
+    # see documentation of Net::Google::Drive::Simple
+    my $google_docs = Net::Google::Drive::Simple::Mirror-&gt;new(
+        remote_root =&gt; &#39;/folder/on/google/docs&#39;,
+        local_root  =&gt; &#39;local/folder&#39;,
+        export_format =&gt; [&#39;opendocument&#39;, &#39;html&#39;],
+    );
+
+    $google_docs-&gt;mirror();</code></pre>
+
+<h1 id="DESCRIPTION">DESCRIPTION</h1>
+
+<p>Net::Google::Drive::Simple::Mirror allows you to locally mirror a folder structure from Google Drive.</p>
+
+<h2 id="GETTING-STARTED">GETTING STARTED</h2>
+
+<p>For setting up your access token see the documentation of Net::Google::Drive::Simple.</p>
+
+<h1 id="METHODS">METHODS</h1>
+
+<dl>
+
+<dt id="new-"><code>new()</code></dt>
+<dd>
+
+<p>Creates a helper object to mirror a remote folder to a local folder.</p>
+
+<p>Parameters:</p>
+
+<p>remote_root: folder on your Google Docs account. See &quot;CAVEATS&quot; below.</p>
+
+<p>local_root: local folder to put the mirrored files in.</p>
+
+<p>export_format: anonymous array containing your preferred export formats. Google Doc files may be exported to several formats. To get an idea of available formats, check &#39;exportLinks()&#39; on a Google Drive Document or Spreadsheet, e.g.</p>
+
+<pre><code>    my $gd = Net::Google::Drive::Simple-&gt;new(); # &#39;Simple&#39; not &#39;Mirror&#39;
+    my $children = $gd-&gt;children( &#39;/path/to/folder/on/google/drive&#39; );
+    for my $child ( @$children ) {
+        if ($child-&gt;can( &#39;exportLinks&#39; )){
+            foreach my $type (keys %{$child-&gt;exportLinks()}){
+                print &quot;$type&quot;;
+            }
+        }
+    }</code></pre>
+
+<p>Now, specify strings that your preferred types match against. The default is [&#39;opendocument&#39;, &#39;html&#39;]</p>
+
+<p>download_condition: reference to a sub that takes the remote file name and the local file name as parameters. Returns true or false. The standard implementation is: # XXX put _should_download() here.</p>
+
+<p>force: download all files and replace local copies.</p>
+
+</dd>
+<dt id="mirror-"><code>mirror()</code></dt>
+<dd>
+
+<p>Recursively mirrors Google Drive folder to local folder.</p>
+
+</dd>
+</dl>
+
+<h1 id="CAVEATS">CAVEATS</h1>
+
+<p>At the moment, remote_root must not contain slashes in the file names of its folders.</p>
+
+<pre><code>    &#39;Folder/Containing/Letters A/B&#39;</code></pre>
+
+<p>Because folder &quot;Letters A/B&quot; contains a slash:</p>
+
+<pre><code>    Folder
+         `--Containing
+                     `--Letters A/B</code></pre>
+
+<p>This will be resolved to:</p>
+
+<pre><code>    Folder
+         `--Containing
+                     `--Letters A
+                                `--B</code></pre>
+
+<p>The remote_root &#39;Example/root&#39; may contain folders and files with slashes. These get replaced with underscores in the local file system.</p>
+
+<pre><code>    remote_root = &#39;Example/root&#39;;
+
+    Example
+          `--root
+                `--Letters A/B</code></pre>
+
+<p>(Net::Google::Drive::Simple::Mirror uses folder ID&#39;s as soon as it has found the remote_root and does not depend on folder file names.)</p>
+
+
+</body>
+
+</html>
+
+
