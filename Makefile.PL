@@ -21,7 +21,7 @@ my %WriteMakefileArgs = (
   "NAME" => "Net::Google::Drive::Simple::Mirror",
   "PREREQ_PM" => {},
   "TEST_REQUIRES" => {},
-  "VERSION" => "0.052",
+  "VERSION" => "0.053",
   "test" => {
     "TESTS" => ""
   }
